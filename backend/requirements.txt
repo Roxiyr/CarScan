@@ -1,21 +1,6 @@
-# Backend requirements untuk Flask API
-
-Flask==2.3.0
-Flask-CORS==4.0.0
-Werkzeug==2.3.0
-Pillow==10.0.0
-numpy==1.24.0
-
-# Uncomment yang sesuai dengan ML framework pilihan Anda:
-
-# TensorFlow (recommended untuk CNN car classification)
-# tensorflow==2.13.0
-# tensorflow-hub==0.13.0
-
-# PyTorch
-# torch==2.0.0
-# torchvision==0.15.0
-
-# ONNX Runtime (jika pakai ONNX models)
-# onnxruntime==1.16.0
-# onnx==1.15.0
+fastapi==0.115.0
+uvicorn==0.30.6
+tensorflow==2.17.0
+pillow==10.4.0
+numpy==1.26.4
+python-multipart==0.0.9
