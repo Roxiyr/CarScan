@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Use relative paths so Vite proxy forwards to backend
+const API_BASE_URL = import.meta.env.REACT_APP_API_URL || '';
+
+// Direct backend URL for fallback (when not using proxy)
+const BACKEND_URL = 'http://localhost:8001';
 
 export const carClassificationApi = {
   /**
@@ -10,11 +14,18 @@ export const carClassificationApi = {
    */
   classifyImage: async (file) => {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('file', file);
 
     try {
+      // Try using proxy first (via Vite dev server)
+      let url = `${API_BASE_URL || ''}/predict`;
+      // Fallback to direct backend URL if proxy not available
+      if (!API_BASE_URL) {
+        url = `${BACKEND_URL}/predict`;
+      }
+      
       const response = await axios.post(
-        `${API_BASE_URL}/classify`,
+        url,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -34,8 +45,9 @@ export const carClassificationApi = {
    */
   getSupportedClasses: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/classes`);
-      return response.data.classes;
+      const url = `${API_BASE_URL || BACKEND_URL}/classes`;
+      const response = await axios.get(url);
+      return response.data.kelas;
     } catch (error) {
       console.error('Error fetching classes:', error);
       return ['SUV', 'Sedan', 'Hatchback', 'MPV', 'Pickup'];
@@ -48,7 +60,8 @@ export const carClassificationApi = {
    */
   getModelInfo: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/model-info`);
+      const url = `${API_BASE_URL || BACKEND_URL}/health`;
+      const response = await axios.get(url);
       return response.data;
     } catch (error) {
       console.error('Error fetching model info:', error);
