@@ -17,46 +17,57 @@ export const PredictionResult = ({ data, onReset }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">PREDICTION RESULT</h2>
+    <div className="prediction-card">
+      <div className="prediction-header">
+        <div>
+          <p className="prediction-label">Prediction result</p>
+          <h2 className="prediction-title">Hasil klasifikasi mobil</h2>
+        </div>
+        <div className="prediction-badge">{Math.round(confidence * 100)}%</div>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="flex flex-col items-center justify-center p-6 bg-blue-50 rounded-lg">
-          <div className="text-sm text-gray-600 mb-2">CAR TYPE DETECTED</div>
-          <div className="text-4xl font-bold text-primary mb-2">{carClass}</div>
-          <div className="text-lg text-gray-700">
-            Confidence{' '}
-            <span className="font-bold">{Math.round(confidence * 100) / 10}%</span>
-          </div>
+      <div className="prediction-grid">
+        <div className="prediction-summary">
+          <p className="summary-label">Detected class</p>
+          <p className="summary-value">{carClass}</p>
+          <p className="summary-help">Model memperkirakan jenis mobil ini dengan confidence tinggi berdasarkan fitur visual utama.</p>
         </div>
 
-        <div>
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Top Predictions</h3>
-          <div className="space-y-3">
+        <div className="prediction-list-card">
+          <div className="prediction-list-header">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Top predictions</p>
+              <span className="text-xs text-slate-500">Ranked by confidence</span>
+            </div>
+            <span className="prediction-meta">Top 5 teratas</span>
+          </div>
+
+          <div className="prediction-list">
             {top5.length === 0 ? (
-              <div className="text-sm text-gray-600">No detailed predictions available.</div>
+              <div className="prediction-empty">Tidak ada detail prediksi yang tersedia.</div>
             ) : (
-              top5.map((t, idx) => (
-                <div key={t.name}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-700">{t.name}</span>
-                    <span className="text-sm font-semibold text-gray-800">{(t.confidence * 100).toFixed(1)}%</span>
+              top5.map((t) => {
+                const score = Math.min(Math.max(Number(t.confidence) * 100, 0), 100);
+                const isPrimary = t.name === carClass;
+                return (
+                  <div key={t.name} className="prediction-item">
+                    <div className="prediction-item-main">
+                      <span className={`prediction-item-name ${isPrimary ? 'active' : ''}`}>{t.name}</span>
+                      <span className="prediction-item-percent">{score.toFixed(1)}%</span>
+                    </div>
+                    <div className="prediction-progress-bar">
+                      <div className={`prediction-progress-fill ${isPrimary ? 'active' : ''}`} style={{ width: `${score}%` }} />
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-full rounded-full transition-all ${t.name === carClass ? 'bg-primary' : 'bg-gray-400'}`}
-                      style={{ width: `${t.confidence * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
       </div>
 
-      <button onClick={onReset} className="w-full mt-8 px-6 py-3 bg-primary text-white rounded-lg hover:bg-blue-700 transition font-semibold">
-        Classify Another Image
+      <button type="button" onClick={onReset} className="prediction-reset">
+        Classify another image
       </button>
     </div>
   );

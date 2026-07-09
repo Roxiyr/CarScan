@@ -1,15 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './index.css'
-import { ImageUpload } from './components/ImageUpload'
-import { PredictionResult } from './components/PredictionResult'
-import { LoadingSpinner } from './components/LoadingSpinner'
+import { UploadSection } from './components/UploadSection'
+import { ResultSection } from './components/ResultSection'
+import { AboutSection } from './components/AboutSection'
 import { carClassificationApi } from './services/carClassificationApi'
+import { loadCarModel, predictLocally } from './services/localModel'
 
 function App() {
   const [preview, setPreview] = useState(null)
   const [prediction, setPrediction] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [mode, setMode] = useState('backend')
+  const [localReady, setLocalReady] = useState(false)
+  const [modelInfo, setModelInfo] = useState(null)
+
+  useEffect(() => {
+    loadCarModel()
+      .then(({ config }) => {
+        setLocalReady(true)
+        setModelInfo(config)
+      })
+      .catch(() => setLocalReady(false))
+
+    carClassificationApi.getModelInfo().then(setModelInfo).catch(() => {})
+  }, [])
 
   const handleImageSelect = async (file) => {
     if (!file) return
@@ -23,8 +38,20 @@ function App() {
     setIsLoading(true)
     setError(null)
     try {
-      const result = await carClassificationApi.classifyImage(file)
-      setPrediction(result)
+      if (mode === 'local') {
+        const img = new Image()
+        img.src = URL.createObjectURL(file)
+        await new Promise((resolve, reject) => {
+          img.onload = resolve
+          img.onerror = reject
+        })
+        const result = await predictLocally(img)
+        setPrediction(result)
+        URL.revokeObjectURL(img.src)
+      } else {
+        const result = await carClassificationApi.classifyImage(file)
+        setPrediction({ ...result, source: 'backend' })
+      }
     } catch (err) {
       setError(err.message || 'Terjadi error saat classify image')
       setPreview(null)
@@ -74,7 +101,7 @@ function App() {
             <div className="hero-stats">
               <div>
                 <span className="label-md">Uploads</span>
-                <p>48 classes</p>
+                <p>{modelInfo?.num_classes || modelInfo?.jumlah_kelas || '—'} classes</p>
               </div>
               <div>
                 <span className="label-md">Status</span>
@@ -83,77 +110,26 @@ function App() {
             </div>
             <div className="hero-status">
               <span className="status-dot"></span>
-              Backend aktif di <strong>http://localhost:8001</strong>
+              {mode === 'backend'
+                ? <>Backend aktif di <strong>http://localhost:8001</strong></>
+                : <>Model browser {localReady ? 'siap' : 'belum dimuat — jalankan python export_model.py'}</>}
             </div>
           </div>
         </section>
 
-        <section id="upload" className="upload-panel">
-          <div className="content-card">
-            <div className="upload-grid">
-              <div>
-                <h2>Upload foto mobilmu</h2>
-                <p className="section-text">File upload akan dikirim ke FastAPI backend untuk prediksi model mobil.</p>
-                <div className="upload-wrapper">
-                  <ImageUpload onImageSelect={handleImageSelect} isLoading={isLoading} />
-                </div>
-              </div>
+        <UploadSection
+          mode={mode}
+          localReady={localReady}
+          onModeChange={setMode}
+          onImageSelect={handleImageSelect}
+          isLoading={isLoading}
+          preview={preview}
+          error={error}
+        />
 
-              <aside className="info-card">
-                <div className="info-box">
-                  <p className="info-label">Preview</p>
-                  {preview ? (
-                    <img src={preview} alt="Preview" className="preview-image" />
-                  ) : (
-                    <div className="preview-empty">Belum ada foto dipilih.</div>
-                  )}
-                </div>
-                <div className="info-box">
-                  <p className="info-label">Petunjuk</p>
-                  <ul className="info-list">
-                    <li>Gunakan foto mobil yang jelas</li>
-                    <li>Dukungan: JPG, PNG</li>
-                    <li>Maksimal: 10 MB</li>
-                  </ul>
-                </div>
-              </aside>
-            </div>
-          </div>
-        </section>
+        <ResultSection prediction={prediction} isLoading={isLoading} onReset={handleReset} />
 
-        {error && (
-          <div className="alert-box alert-error">{error}</div>
-        )}
-
-        {isLoading && (
-          <div className="status-card">
-            <LoadingSpinner />
-          </div>
-        )}
-
-        {prediction && !isLoading && (
-          <section id="results" className="result-panel">
-            <PredictionResult data={prediction} onReset={handleReset} />
-          </section>
-        )}
-
-        <section id="about" className="about-panel">
-          <h2>Cara kerjanya</h2>
-          <div className="about-grid">
-            <div className="about-card">
-              <p className="about-step">1. Upload</p>
-              <p>Pilih foto mobil dan kirim ke backend.</p>
-            </div>
-            <div className="about-card">
-              <p className="about-step">2. Model</p>
-              <p>Backend memproses dengan model TensorFlow.</p>
-            </div>
-            <div className="about-card">
-              <p className="about-step">3. Hasil</p>
-              <p>Lihat prediksi utama dan top-5 kelas.</p>
-            </div>
-          </div>
-        </section>
+        <AboutSection />
       </main>
     </div>
   )
