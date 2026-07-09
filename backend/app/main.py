@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
 import logging
+import os
 import time
 from .predictor import get_predictor
 from .schemas import HasilPrediksi
@@ -67,7 +68,21 @@ async def get_classes():
         raise HTTPException(status_code=500, detail="Class names belum dimuat")
     return {
         "jumlah_kelas": len(predictor.class_names),
-        "kelas": predictor.class_names
+        "kelas": predictor.class_names,
+        "classes": predictor.class_names,
+        "img_size": list(predictor.img_size) if predictor.img_size else None,
+    }
+
+
+@app.get("/model-info")
+async def model_info():
+    """Info model untuk frontend"""
+    return {
+        "model": os.path.basename(predictor.model_path) if predictor.model_path else None,
+        "model_loaded": predictor.model is not None,
+        "jumlah_kelas": len(predictor.class_names) if predictor.class_names else 0,
+        "img_size": list(predictor.img_size) if predictor.img_size else None,
+        "version": "1.0.0",
     }
 
 

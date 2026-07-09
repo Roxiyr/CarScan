@@ -39,7 +39,7 @@ export const carClassificationApi = {
   getSupportedClasses: async () => {
     try {
       const response = await api.get('/classes');
-      return response.data.classes;
+      return response.data.classes || response.data.kelas;
     } catch (error) {
       console.error('Error fetching classes:', error);
       return ['SUV', 'Sedan', 'Hatchback', 'MPV', 'Pickup'];

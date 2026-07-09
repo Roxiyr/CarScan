@@ -1,0 +1,43 @@
+{
+  "num_classes": 10,
+  "img_size": [
+    260,
+    260
+  ],
+  "class_names": [
+    "Daihatsu Xenia",
+    "Honda CR-V",
+    "Honda Jazz",
+    "Hyundai H-1",
+    "Isuzu Panther",
+    "Mitsubishi Xpander",
+    "Suzuki Ertiga",
+    "Toyota Avanza",
+    "Toyota Yaris",
+    "Wuling Cortez"
+  ],
+  "class_to_idx": {
+    "Daihatsu Xenia": 0,
+    "Honda CR-V": 1,
+    "Honda Jazz": 2,
+    "Hyundai H-1": 3,
+    "Isuzu Panther": 4,
+    "Mitsubishi Xpander": 5,
+    "Suzuki Ertiga": 6,
+    "Toyota Avanza": 7,
+    "Toyota Yaris": 8,
+    "Wuling Cortez": 9
+  },
+  "idx_to_class": {
+    "0": "Daihatsu Xenia",
+    "1": "Honda CR-V",
+    "2": "Honda Jazz",
+    "3": "Hyundai H-1",
+    "4": "Isuzu Panther",
+    "5": "Mitsubishi Xpander",
+    "6": "Suzuki Ertiga",
+    "7": "Toyota Avanza",
+    "8": "Toyota Yaris",
+    "9": "Wuling Cortez"
+  }
+}
