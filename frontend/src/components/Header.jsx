@@ -1,3 +1,5 @@
+import { ThemeToggle } from './ThemeToggle';
+
 export const Header = () => {
   return (
     <header className="site-header">
@@ -11,6 +13,7 @@ export const Header = () => {
         </div>
         <nav className="nav-links">
           <a href="#about">About</a>
+          <ThemeToggle />
         </nav>
       </div>
     </header>

@@ -1,3 +1,12 @@
+// Format class name: replace underscores with spaces and capitalize
+const formatClassName = (name) => {
+  if (!name) return name;
+  return name
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export const PredictionResult = ({ data, onReset }) => {
   if (!data) return null;
 
@@ -29,7 +38,7 @@ export const PredictionResult = ({ data, onReset }) => {
       <div className="prediction-grid">
         <div className="prediction-summary">
           <p className="summary-label">Detected class</p>
-          <p className="summary-value">{carClass}</p>
+          <p className="summary-value">{formatClassName(carClass)}</p>
           <p className="summary-help">Model memperkirakan jenis mobil ini dengan confidence tinggi berdasarkan fitur visual utama.</p>
         </div>
 
@@ -52,7 +61,7 @@ export const PredictionResult = ({ data, onReset }) => {
                 return (
                   <div key={t.name} className="prediction-item">
                     <div className="prediction-item-main">
-                      <span className={`prediction-item-name ${isPrimary ? 'active' : ''}`}>{t.name}</span>
+                      <span className={`prediction-item-name ${isPrimary ? 'active' : ''}`}>{formatClassName(t.name)}</span>
                       <span className="prediction-item-percent">{score.toFixed(1)}%</span>
                     </div>
                     <div className="prediction-progress-bar">

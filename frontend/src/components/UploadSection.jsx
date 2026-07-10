@@ -8,25 +8,8 @@ export const UploadSection = ({ mode, localReady, onModeChange, onImageSelect, i
           <p className="section-label">Upload</p>
           <h2 className="section-title">Unggah foto mobilmu untuk prediksi cepat.</h2>
           <p className="section-description">
-            Pilih mode prediksi: backend FastAPI atau browser dengan TensorFlow.js.
+            Upload foto mobil Anda dan AI akan menganalisisnya untuk mengenali merek dan modelnya.
           </p>
-        </div>
-        <div className="section-actions">
-          <button
-            type="button"
-            className={`btn ${mode === 'backend' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => onModeChange('backend')}
-          >
-            Backend API
-          </button>
-          <button
-            type="button"
-            className={`btn ${mode === 'local' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => onModeChange('local')}
-            disabled={!localReady}
-          >
-            Browser (TF.js)
-          </button>
         </div>
       </div>
 
