@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 import os
 import time
@@ -12,6 +13,17 @@ app = FastAPI(
     title="Car Classifier API",
     description="API klasifikasi merek dan model mobil dari foto",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://car-scan-utfi.vercel.app",
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Load model saat startup
