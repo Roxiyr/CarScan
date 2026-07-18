@@ -18,7 +18,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://car-scan-utfi.vercel.app",
+        "https://car-scan-one.vercel.app",
         "http://localhost:5173",
     ],
     allow_credentials=True,
